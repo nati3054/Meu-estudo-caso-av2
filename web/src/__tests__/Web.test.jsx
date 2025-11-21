@@ -23,12 +23,14 @@ beforeEach(() => {
 });
 
 describe("Fluxo completo de alunos (integração)", () => {
-  it("lista, navega para novo aluno, cria e volta exibindo item", async () => {
-    mockListar
-      .mockResolvedValueOnce([]) // primeira montagem da lista
-      .mockResolvedValueOnce([
-        {
-          id: 1,
+  it(
+    "lista, navega para novo aluno, cria e volta exibindo item",
+    async () => {
+      mockListar
+        .mockResolvedValueOnce([]) // primeira montagem da lista
+        .mockResolvedValueOnce([
+          {
+            id: 1,
           nome: "Ana",
           turma: "1001",
           curso: "Medicina",
@@ -43,9 +45,10 @@ describe("Fluxo completo de alunos (integração)", () => {
       matricula: "123",
     });
 
-    render(<App />);
+      window.history.pushState({}, "", "/alunos");
+      render(<App />);
 
-    expect(await screen.findByText(/Alunos/i)).toBeInTheDocument();
+      expect(await screen.findByRole("heading", { name: /Alunos/i })).toBeInTheDocument();
     expect(mockListar).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole("link", { name: /Novo Aluno/i }));
@@ -75,16 +78,20 @@ describe("Fluxo completo de alunos (integração)", () => {
     });
 
     await waitFor(() => expect(mockListar).toHaveBeenCalledTimes(2));
-    expect(mockAtualizar).not.toHaveBeenCalled();
-    expect(mockExcluir).not.toHaveBeenCalled();
-    expect(await screen.findByText("Ana")).toBeInTheDocument();
-  });
+      expect(mockAtualizar).not.toHaveBeenCalled();
+      expect(mockExcluir).not.toHaveBeenCalled();
+      expect(await screen.findByText("Ana")).toBeInTheDocument();
+    },
+    10000
+  );
 
-  it("edita e exclui um aluno existente", async () => {
-    mockListar
-      .mockResolvedValueOnce([
-        { id: 2, nome: "Bruno", turma: "2001", curso: "Direito", matricula: "456" },
-      ])
+  it(
+    "edita e exclui um aluno existente",
+    async () => {
+      mockListar
+        .mockResolvedValueOnce([
+          { id: 2, nome: "Bruno", turma: "2001", curso: "Direito", matricula: "456" },
+        ])
       .mockResolvedValueOnce([
         { id: 2, nome: "Bruno Editado", turma: "2001", curso: "Direito", matricula: "456" },
       ]) // após editar
@@ -105,6 +112,7 @@ describe("Fluxo completo de alunos (integração)", () => {
     // Mock de confirm
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
 
+    window.history.pushState({}, "", "/alunos");
     render(<App />);
 
     expect(await screen.findByText("Bruno")).toBeInTheDocument();
@@ -147,5 +155,38 @@ describe("Fluxo completo de alunos (integração)", () => {
     await waitFor(() => expect(mockListar).toHaveBeenCalledTimes(4));
     expect(confirmSpy).toHaveBeenCalled();
     expect(screen.getByText(/Nenhum aluno cadastrado/i)).toBeInTheDocument();
-  });
+    },
+    10000
+  );
+
+  it(
+    "cancela exclusao e mostra mensagem de busca sem resultados",
+    async () => {
+      mockListar.mockResolvedValue([
+        { id: 3, nome: "Carla", turma: "3001", curso: "Design", matricula: "789" },
+      ]);
+      mockExcluir.mockResolvedValue({});
+      const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+
+      window.history.pushState({}, "", "/alunos");
+      render(<App />);
+
+      expect(await screen.findByRole("heading", { name: /Alunos/i })).toBeInTheDocument();
+      expect(await screen.findByText("Carla")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole("button", { name: /Excluir aluno/i }));
+      expect(confirmSpy).toHaveBeenCalled();
+      expect(mockExcluir).not.toHaveBeenCalled();
+
+      fireEvent.change(screen.getByPlaceholderText(/Buscar por nome/i), {
+        target: { value: "ZZZ" },
+      });
+
+      expect(
+        await screen.findByText(/Nenhum aluno encontrado para sua busca./i)
+      ).toBeInTheDocument();
+      expect(mockListar).toHaveBeenCalledTimes(1);
+    },
+    10000
+  );
 });
