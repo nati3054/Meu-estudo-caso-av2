@@ -215,12 +215,14 @@ export default function ListaAlunos() {
                   <TableCell sx={{ whiteSpace: "nowrap" }} align="right">
                     <IconButton
                       color="primary"
+                      aria-label="Editar aluno"
                       onClick={() => navigate(`/editar/${aluno.id}`)}
                     >
                       <EditIcon />
                     </IconButton>
                     <IconButton
                       color="secondary"
+                      aria-label="Excluir aluno"
                       onClick={() => handleDelete(aluno.id)}
                     >
                       <DeleteIcon />
