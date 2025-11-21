@@ -10,8 +10,8 @@ import { Text } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import produtoService, { Produto } from "../../scripts/alunoService";
-import FormProduto from "../../components/FormProduto";
+import alunoService, { Aluno } from "../../scripts/alunoService";
+import FormAluno from "../../components/FormAluno";
 
 const palette = {
   background: "#F7F5FF",
@@ -20,35 +20,40 @@ const palette = {
   muted: "#6B6784",
 };
 
-export default function NovoProduto() {
-  const [produto, setProduto] = useState<Produto>({ nome: "", preco: 0 });
+export default function NovoAluno() {
+  const [aluno, setAluno] = useState<Aluno>({
+    nome: "",
+    turma: "",
+    curso: "",
+    matricula: "",
+  });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleChange = (name: keyof Produto, value: string) => {
-    setProduto((prev) => ({
+  const handleChange = (name: keyof Aluno, value: string) => {
+    setAluno((prev) => ({
       ...prev,
-      [name]: name === "preco" ? value : value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (data?: any) => {
-    const nome = data?.nome ?? produto.nome;
-    const precoStr = data?.preco ?? produto.preco;
-    const preco =
-      typeof precoStr === "string" ? parseFloat(precoStr) : precoStr;
+    const nome = data?.nome ?? aluno.nome;
+    const turma = data?.turma ?? aluno.turma;
+    const curso = data?.curso ?? aluno.curso;
+    const matricula = data?.matricula ?? aluno.matricula;
 
-    if (!nome || !preco) {
+    if (!nome || !turma || !curso || !matricula) {
       alert("Preencha todos os campos!");
       return;
     }
     setLoading(true);
     try {
-      await produtoService.criar({ nome, preco });
+      await alunoService.criar({ nome, turma, curso, matricula });
       if (router.canGoBack?.()) {
         router.back();
       } else {
-        router.replace("/produtos");
+        router.replace("/alunos");
       }
     } finally {
       setLoading(false);
@@ -69,14 +74,14 @@ export default function NovoProduto() {
         >
           <View style={styles.header}>
             <Text variant="headlineMedium" style={styles.title}>
-              Novo Produto
+              Novo Aluno
             </Text>
             <Text variant="bodyMedium" style={styles.subtitle}>
-              Complete os campos para adicionar um item ao catalogo.
+              Complete os campos para cadastrar um aluno.
             </Text>
           </View>
-          <FormProduto
-            produto={produto}
+          <FormAluno
+            aluno={aluno}
             loading={loading}
             onChange={handleChange}
             onSubmit={handleSubmit}
@@ -84,7 +89,7 @@ export default function NovoProduto() {
               if (router.canGoBack?.()) {
                 router.back();
               } else {
-                router.replace("/produtos");
+                router.replace("/alunos");
               }
             }}
           />

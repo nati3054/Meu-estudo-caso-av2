@@ -21,7 +21,7 @@ import {
 } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { useFocusEffect, useRouter } from "expo-router";
-import produtoService, { Produto } from "../../scripts/alunoService";
+import alunoService, { Aluno } from "../../scripts/alunoService";
 
 const palette = {
   background: "#F7F5FF",
@@ -35,15 +35,15 @@ const palette = {
   chip: "#EFE9FF",
 };
 
-export default function Produtos() {
-  const [produtos, setProdutos] = useState<Produto[]>([]);
+export default function Alunos() {
+  const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const carregarProdutos = useCallback(async (showLoader = true) => {
+  const carregarAlunos = useCallback(async (showLoader = true) => {
     if (showLoader) {
       setLoading(true);
     } else {
@@ -51,17 +51,17 @@ export default function Produtos() {
     }
     setErrorMessage(null);
     try {
-      const lista = await produtoService.listar();
-      setProdutos(lista);
+      const lista = await alunoService.listar();
+      setAlunos(lista);
     } catch (error) {
-      console.error("Erro ao carregar produtos", error);
-      setProdutos([]);
+      console.error("Erro ao carregar alunos", error);
+      setAlunos([]);
       setErrorMessage(
-        "Nao foi possivel carregar os produtos. Verifique sua conexao e tente novamente."
+        "Nao foi possivel carregar os alunos. Verifique sua conexao e tente novamente."
       );
       Alert.alert(
         "Erro",
-        "Nao foi possivel carregar os produtos. Verifique sua conexao e tente novamente."
+        "Nao foi possivel carregar os alunos. Verifique sua conexao e tente novamente."
       );
     } finally {
       if (showLoader) {
@@ -74,48 +74,45 @@ export default function Produtos() {
 
   useFocusEffect(
     useCallback(() => {
-      carregarProdutos();
-    }, [carregarProdutos])
+      carregarAlunos();
+    }, [carregarAlunos])
   );
 
-  const filteredProdutos = useMemo(() => {
+  const filteredAlunos = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return produtos;
-    return produtos.filter((produto) =>
-      `${produto.nome} ${produto.preco}`.toLowerCase().includes(term)
+    if (!term) return alunos;
+    return alunos.filter((aluno) =>
+      `${aluno.nome} ${aluno.turma} ${aluno.curso} ${aluno.matricula}`
+        .toLowerCase()
+        .includes(term)
     );
-  }, [produtos, search]);
+  }, [alunos, search]);
 
   const hasSearch = search.trim().length > 0;
 
   const handleDelete = (id: number) => {
     const executarExclusao = async () => {
       try {
-        await produtoService.excluir(id);
-        setProdutos((listaAtual) =>
-          listaAtual.filter((produto) => produto.id !== id)
-        );
-        await carregarProdutos(false);
+        await alunoService.excluir(id);
+        setAlunos((listaAtual) => listaAtual.filter((aluno) => aluno.id !== id));
+        await carregarAlunos(false);
       } catch (error) {
-        console.error("Erro ao excluir produto", error);
-        Alert.alert(
-          "Erro",
-          "Nao foi possivel excluir o produto. Tente novamente."
-        );
+        console.error("Erro ao excluir aluno", error);
+        Alert.alert("Erro", "Nao foi possivel excluir o aluno. Tente novamente.");
       }
     };
 
     if (Platform.OS === "web") {
       const confirmou =
         typeof globalThis !== "undefined" &&
-        (globalThis as any).confirm?.("Deseja realmente excluir este produto?");
+        (globalThis as any).confirm?.("Deseja realmente excluir este aluno?");
       if (confirmou) {
         executarExclusao();
       }
       return;
     }
 
-    Alert.alert("Excluir Produto", "Deseja realmente excluir este produto?", [
+    Alert.alert("Excluir Aluno", "Deseja realmente excluir este aluno?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Excluir",
@@ -130,30 +127,30 @@ export default function Produtos() {
       <SafeAreaView style={styles.loadingContainer}>
         <StatusBar style="dark" />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>Carregando produtos...</Text>
+        <Text style={styles.loadingText}>Carregando alunos...</Text>
       </SafeAreaView>
     );
   }
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <Text style={styles.headerTitle}>Produtos</Text>
+      <Text style={styles.headerTitle}>Alunos</Text>
       <Text style={styles.headerSubtitle}>
-        Controle o estoque, acompanhe precos e mantenha tudo atualizado.
+        Consulte turmas, cursos e matrículas rapidamente.
       </Text>
       <View style={styles.summaryCard}>
         <View>
-          <Text style={styles.summaryValue}>{produtos.length}</Text>
+          <Text style={styles.summaryValue}>{alunos.length}</Text>
           <Text style={styles.summaryLabel}>itens cadastrados</Text>
         </View>
         <IconButton
           icon="refresh"
           size={20}
-          onPress={() => carregarProdutos(false)}
+          onPress={() => carregarAlunos(false)}
         />
       </View>
       <Searchbar
-        placeholder="Buscar por nome ou preco"
+        placeholder="Buscar por nome, turma, curso ou matricula"
         value={search}
         onChangeText={setSearch}
         style={styles.searchbar}
@@ -165,7 +162,7 @@ export default function Produtos() {
       <Button
         mode="outlined"
         icon="refresh"
-        onPress={() => carregarProdutos(false)}
+        onPress={() => carregarAlunos(false)}
         loading={refreshing}
         style={styles.refreshButton}
         textColor={palette.text}
@@ -175,7 +172,7 @@ export default function Produtos() {
     </View>
   );
 
-  const renderItem = ({ item }: { item: Produto }) => (
+  const renderItem = ({ item }: { item: Aluno }) => (
     <Card style={styles.productCard} mode="elevated">
       <Card.Title
         title={item.nome}
@@ -184,30 +181,50 @@ export default function Produtos() {
           <Avatar.Icon
             {...props}
             size={44}
-            icon="cube-outline"
+            icon="account-school-outline"
             style={styles.productAvatar}
             color={palette.primary}
           />
         )}
       />
       <Card.Content style={styles.cardContent}>
-        <View style={styles.priceWrapper}>
-          <Text style={styles.priceLabel}>Preco</Text>
-          <Text style={styles.priceValue}>R$ {item.preco.toFixed(2)}</Text>
+        <View style={styles.infoRow}>
+          <View>
+            <Text style={styles.infoLabel}>Matricula</Text>
+            <Text style={styles.infoValue}>{item.matricula || "--"}</Text>
+          </View>
+          <Chip
+            icon="identifier"
+            compact
+            style={styles.idChip}
+            textStyle={styles.idChipText}
+          >
+            #{item.id ?? "N/I"}
+          </Chip>
         </View>
-        <Chip
-          icon="identifier"
-          compact
-          style={styles.idChip}
-          textStyle={styles.idChipText}
-        >
-          #{item.id ?? "N/I"}
-        </Chip>
+        <View style={styles.chipRow}>
+          <Chip
+            icon="book-open-variant"
+            compact
+            style={styles.courseChip}
+            textStyle={styles.courseChipText}
+          >
+            {item.curso || "Sem curso"}
+          </Chip>
+          <Chip
+            icon="account-group-outline"
+            compact
+            style={styles.turmaChip}
+            textStyle={styles.turmaChipText}
+          >
+            {item.turma || "Sem turma"}
+          </Chip>
+        </View>
       </Card.Content>
       <Card.Actions style={styles.cardActions}>
         <Button
           mode="contained-tonal"
-          onPress={() => router.push(`/produtos/${item.id}`)}
+          onPress={() => router.push(`/alunos/${item.id}`)}
           icon="pencil-outline"
           style={styles.editButton}
           textColor={palette.primary}
@@ -227,7 +244,7 @@ export default function Produtos() {
   );
 
   const renderEmpty = () => {
-    if (hasSearch && !errorMessage && produtos.length > 0) {
+    if (hasSearch && !errorMessage && alunos.length > 0) {
       return (
         <Card style={styles.emptyCard} mode="elevated">
           <Card.Content style={styles.emptyContent}>
@@ -239,7 +256,7 @@ export default function Produtos() {
             />
             <Text style={styles.emptyTitle}>Nada encontrado</Text>
             <Text style={styles.emptySubtitle}>
-              Ajuste os termos de busca para localizar o produto desejado.
+              Ajuste os termos de busca para localizar o aluno desejado.
             </Text>
           </Card.Content>
         </Card>
@@ -256,23 +273,21 @@ export default function Produtos() {
             color={palette.primary}
           />
           <Text style={styles.emptyTitle}>
-            {errorMessage ? "Erro ao carregar" : "Nenhum produto ainda"}
+            {errorMessage ? "Erro ao carregar" : "Nenhum aluno ainda"}
           </Text>
           <Text style={styles.emptySubtitle}>
             {errorMessage ??
-              "Comece cadastrando um produto para ver tudo organizado aqui."}
+              "Comece cadastrando um aluno para ver tudo organizado aqui."}
           </Text>
           <Button
             mode="contained"
             onPress={() =>
-              errorMessage
-                ? carregarProdutos(false)
-                : router.push("/produtos/novo")
+              errorMessage ? carregarAlunos(false) : router.push("/alunos/novo")
             }
             style={styles.emptyButton}
             icon={errorMessage ? "refresh" : "plus"}
           >
-            {errorMessage ? "Tentar novamente" : "Adicionar produto"}
+            {errorMessage ? "Tentar novamente" : "Adicionar aluno"}
           </Button>
         </Card.Content>
       </Card>
@@ -284,20 +299,22 @@ export default function Produtos() {
       <StatusBar style="dark" />
       <View style={styles.backgroundAccent} />
       <FlatList
-        data={filteredProdutos}
+        data={filteredAlunos}
         keyExtractor={(item) => item.id?.toString() ?? ""}
         renderItem={renderItem}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => carregarProdutos(false)}
+            onRefresh={() => carregarAlunos(false)}
             colors={[palette.primary]}
             tintColor={palette.primary}
           />
         }
         contentContainerStyle={[
           styles.listContent,
-          filteredProdutos.length === 0 && styles.listContentEmpty,
+          filteredAlunos.length === 0 && styles.listContentEmpty,
         ]}
         ListHeaderComponent={renderHeader()}
         ListEmptyComponent={renderEmpty()}
@@ -307,7 +324,7 @@ export default function Produtos() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => router.push("/produtos/novo")}
+        onPress={() => router.push("/alunos/novo")}
         color="#fff"
       />
     </SafeAreaView>
@@ -399,40 +416,66 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   productCard: {
+    flex: 1,
     borderRadius: 20,
     backgroundColor: palette.card,
+    borderWidth: 1,
+    borderColor: "rgba(108, 99, 255, 0.08)",
   },
   productAvatar: {
     backgroundColor: palette.chip,
   },
   productTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
     color: palette.text,
   },
   cardContent: {
+    gap: 12,
+    paddingTop: 4,
+  },
+  infoRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 4,
   },
-  priceWrapper: {
-    gap: 4,
-  },
-  priceLabel: {
-    fontSize: 13,
+  infoLabel: {
+    fontSize: 12,
     color: palette.muted,
+    letterSpacing: 0.3,
   },
-  priceValue: {
-    fontSize: 20,
+  infoValue: {
+    fontSize: 22,
     fontWeight: "700",
     color: palette.primary,
   },
+  chipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   idChip: {
     backgroundColor: palette.chip,
+    borderRadius: 14,
   },
   idChipText: {
     color: palette.text,
+    fontWeight: "700",
+  },
+  courseChip: {
+    backgroundColor: "rgba(108, 99, 255, 0.12)",
+  },
+  courseChipText: {
+    color: palette.primary,
+    fontWeight: "600",
+  },
+  turmaChip: {
+    backgroundColor: "rgba(255, 101, 132, 0.1)",
+    borderColor: "rgba(255, 101, 132, 0.4)",
+    borderWidth: 1,
+  },
+  turmaChipText: {
+    color: palette.accent,
     fontWeight: "600",
   },
   cardActions: {
@@ -477,5 +520,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: palette.primary,
     marginTop: 4,
+  },
+  columnWrapper: {
+    gap: 12,
   },
 });

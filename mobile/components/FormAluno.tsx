@@ -1,23 +1,20 @@
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Controller, useForm } from "react-hook-form";
-import {
-  TextInput,
-  Button,
-  HelperText,
-  Surface,
-} from "react-native-paper";
-import { Produto } from "../scripts/alunoService";
+import { TextInput, Button, HelperText, Surface } from "react-native-paper";
+import { Aluno } from "../scripts/alunoService";
 
 interface FormValues {
   nome: string;
-  preco: string;
+  turma: string;
+  curso: string;
+  matricula: string;
 }
 
 interface Props {
-  produto: Produto;
+  aluno: Aluno;
   loading: boolean;
-  onChange: (name: keyof Produto, value: string) => void;
+  onChange: (name: keyof Aluno, value: string) => void;
   onSubmit: (data?: FormValues) => void;
   onCancel: () => void;
 }
@@ -29,8 +26,8 @@ const palette = {
   surface: "#FFFFFF",
 };
 
-export default function FormProduto({
-  produto,
+export default function FormAluno({
+  aluno,
   loading,
   onChange,
   onSubmit,
@@ -38,15 +35,19 @@ export default function FormProduto({
 }: Props) {
   const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
-      nome: produto.nome,
-      preco: produto.preco ? String(produto.preco) : "",
+      nome: aluno.nome,
+      turma: aluno.turma,
+      curso: aluno.curso,
+      matricula: aluno.matricula,
     },
   });
 
   useEffect(() => {
-    setValue("nome", produto.nome);
-    setValue("preco", produto.preco ? String(produto.preco) : "");
-  }, [produto, setValue]);
+    setValue("nome", aluno.nome);
+    setValue("turma", aluno.turma);
+    setValue("curso", aluno.curso);
+    setValue("matricula", aluno.matricula);
+  }, [aluno, setValue]);
 
   return (
     <Surface style={styles.surface} elevation={2}>
@@ -80,27 +81,78 @@ export default function FormProduto({
       />
       <Controller
         control={control}
-        name="preco"
+        name="turma"
         rules={{
-          required: "Preco obrigatorio",
-          pattern: {
-            value: /^\d+(\.\d{1,2})?$/,
-            message: "Digite um valor valido",
-          },
+          required: "Turma obrigatoria",
         }}
         render={({ field: { onChange: onChangeField, value }, fieldState }) => (
           <View style={styles.field}>
             <TextInput
-              label="Preco"
+              label="Turma"
               value={value}
               onChangeText={(text) => {
-                const sanitized = text.replace(",", ".").replace(/[^0-9.]/g, "");
-                onChangeField(sanitized);
-                onChange("preco", sanitized);
+                onChangeField(text);
+                onChange("turma", text);
               }}
               mode="outlined"
-              keyboardType="decimal-pad"
-              inputMode="decimal"
+              style={styles.input}
+              selectionColor={palette.primary}
+              outlineColor={palette.outline}
+              activeOutlineColor={palette.primary}
+              textColor={palette.text}
+              error={!!fieldState.error}
+            />
+            <HelperText type="error" visible={!!fieldState.error}>
+              {fieldState.error?.message}
+            </HelperText>
+          </View>
+        )}
+      />
+      <Controller
+        control={control}
+        name="curso"
+        rules={{
+          required: "Curso obrigatorio",
+        }}
+        render={({ field: { onChange: onChangeField, value }, fieldState }) => (
+          <View style={styles.field}>
+            <TextInput
+              label="Curso"
+              value={value}
+              onChangeText={(text) => {
+                onChangeField(text);
+                onChange("curso", text);
+              }}
+              mode="outlined"
+              style={styles.input}
+              selectionColor={palette.primary}
+              outlineColor={palette.outline}
+              activeOutlineColor={palette.primary}
+              textColor={palette.text}
+              error={!!fieldState.error}
+            />
+            <HelperText type="error" visible={!!fieldState.error}>
+              {fieldState.error?.message}
+            </HelperText>
+          </View>
+        )}
+      />
+      <Controller
+        control={control}
+        name="matricula"
+        rules={{
+          required: "Matricula obrigatoria",
+        }}
+        render={({ field: { onChange: onChangeField, value }, fieldState }) => (
+          <View style={styles.field}>
+            <TextInput
+              label="Matricula"
+              value={value}
+              onChangeText={(text) => {
+                onChangeField(text);
+                onChange("matricula", text);
+              }}
+              mode="outlined"
               style={styles.input}
               selectionColor={palette.primary}
               outlineColor={palette.outline}

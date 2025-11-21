@@ -11,8 +11,8 @@ import { Text } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import produtoService, { Produto } from "../../scripts/alunoService";
-import FormProduto from "../../components/FormProduto";
+import alunoService, { Aluno } from "../../scripts/alunoService";
+import FormAluno from "../../components/FormAluno";
 
 const palette = {
   background: "#F7F5FF",
@@ -22,61 +22,76 @@ const palette = {
   primary: "#6C63FF",
 };
 
-export default function EditarProduto() {
+export default function EditarAluno() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [produto, setProduto] = useState<Produto>({ nome: "", preco: 0 });
-  const [loadingProduto, setLoadingProduto] = useState(true);
+  const [aluno, setAluno] = useState<Aluno>({
+    nome: "",
+    turma: "",
+    curso: "",
+    matricula: "",
+  });
+  const [loadingAluno, setLoadingAluno] = useState(true);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (id) {
-      setLoadingProduto(true);
-      produtoService
+      setLoadingAluno(true);
+      alunoService
         .obter(Number(id))
         .then((data) => {
-          setProduto({ nome: data.nome, preco: data.preco });
+          setAluno({
+            nome: data.nome,
+            turma: data.turma,
+            curso: data.curso,
+            matricula: data.matricula,
+          });
         })
-        .finally(() => setLoadingProduto(false));
+        .finally(() => setLoadingAluno(false));
     }
   }, [id]);
 
-  const handleChange = (name: keyof Produto, value: string) => {
-    setProduto((prev) => ({
+  const handleChange = (name: keyof Aluno, value: string) => {
+    setAluno((prev) => ({
       ...prev,
-      [name]: name === "preco" ? value : value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (data?: any) => {
-    const nome = data?.nome ?? produto.nome;
-    const precoStr = data?.preco ?? produto.preco;
-    const preco =
-      typeof precoStr === "string" ? parseFloat(precoStr) : precoStr;
+    const nome = data?.nome ?? aluno.nome;
+    const turma = data?.turma ?? aluno.turma;
+    const curso = data?.curso ?? aluno.curso;
+    const matricula = data?.matricula ?? aluno.matricula;
 
-    if (!nome || !preco) {
+    if (!nome || !turma || !curso || !matricula) {
       alert("Preencha todos os campos!");
       return;
     }
     setSaving(true);
     try {
-      await produtoService.atualizar(Number(id), { nome, preco });
+      await alunoService.atualizar(Number(id), {
+        nome,
+        turma,
+        curso,
+        matricula,
+      });
       if (router.canGoBack?.()) {
         router.back();
       } else {
-        router.replace("/produtos");
+        router.replace("/alunos");
       }
     } finally {
       setSaving(false);
     }
   };
 
-  if (loadingProduto) {
+  if (loadingAluno) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <StatusBar style="dark" />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>Carregando produto...</Text>
+        <Text style={styles.loadingText}>Carregando aluno...</Text>
       </SafeAreaView>
     );
   }
@@ -95,14 +110,14 @@ export default function EditarProduto() {
         >
           <View style={styles.header}>
             <Text variant="headlineMedium" style={styles.title}>
-              Editar Produto
+              Editar Aluno
             </Text>
             <Text variant="bodyMedium" style={styles.subtitle}>
               Atualize as informacoes e salve para sincronizar com o sistema.
             </Text>
           </View>
-          <FormProduto
-            produto={produto}
+          <FormAluno
+            aluno={aluno}
             loading={saving}
             onChange={handleChange}
             onSubmit={handleSubmit}
@@ -110,7 +125,7 @@ export default function EditarProduto() {
               if (router.canGoBack?.()) {
                 router.back();
               } else {
-                router.replace("/produtos");
+                router.replace("/alunos");
               }
             }}
           />

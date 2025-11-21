@@ -1,30 +1,32 @@
 import axios from "axios";
 
-export interface Produto {
+export interface Aluno {
   id?: number;
   nome: string;
-  preco: number;
+  turma: string;
+  curso: string;
+  matricula: string;
 }
 
-const API_URL = "https://proweb.leoproti.com.br/produtos";
+const API_URL = "https://proweb.leoproti.com.br/alunos";
 
-const listar = async (): Promise<Produto[]> => {
+const listar = async (): Promise<Aluno[]> => {
   const { data } = await axios.get(API_URL);
   return data;
 };
 
-const obter = async (id: number): Promise<Produto> => {
+const obter = async (id: number): Promise<Aluno> => {
   const { data } = await axios.get(`${API_URL}/${id}`);
   return data;
 };
 
-const criar = async (produto: Produto): Promise<Produto> => {
-  const { data } = await axios.post(API_URL, produto);
+const criar = async (aluno: Aluno): Promise<Aluno> => {
+  const { data } = await axios.post(API_URL, aluno);
   return data;
 };
 
-const atualizar = async (id: number, produto: Produto): Promise<Produto> => {
-  const { data } = await axios.put(`${API_URL}/${id}`, produto);
+const atualizar = async (id: number, aluno: Aluno): Promise<Aluno> => {
+  const { data } = await axios.put(`${API_URL}/${id}`, aluno);
   return data;
 };
 

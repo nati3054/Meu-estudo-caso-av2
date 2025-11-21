@@ -39,14 +39,11 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: palette.background },
         }}
       >
-        <Stack.Screen name="produtos/index" options={{ title: "Lista" }} />
+        <Stack.Screen name="alunos/index" options={{ title: "Lista" }} />
+        <Stack.Screen name="alunos/novo" options={{ title: "Novo Aluno" }} />
         <Stack.Screen
-          name="produtos/novo"
-          options={{ title: "Novo Produto" }}
-        />
-        <Stack.Screen
-          name="produtos/[id]"
-          options={{ title: "Editar Produto" }}
+          name="alunos/[id]"
+          options={{ title: "Editar Aluno" }}
         />
       </Stack>
     </PaperProvider>

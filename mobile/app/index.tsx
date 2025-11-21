@@ -23,24 +23,24 @@ export default function Index() {
         <Card style={styles.card} mode="elevated">
           <Image
             source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
+              uri: "https://cdn-icons-png.flaticon.com/512/194/194931.png",
             }}
             style={styles.illustration}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Produtos</Text>
+          <Text style={styles.title}>Alunos</Text>
           <Text style={styles.subtitle}>
-            Organize o catalogo, acompanhe valores e mantenha tudo sincronizado.
+            Cadastre turmas, cursos e matrículas para manter tudo organizado.
           </Text>
           <Button
             mode="contained"
-            onPress={() => router.push("/produtos")}
+            onPress={() => router.push("/alunos")}
             style={styles.ctaButton}
             labelStyle={styles.ctaButtonLabel}
             contentStyle={{ paddingVertical: 4 }}
-            icon="format-list-bulleted"
+            icon="account-school-outline"
           >
-            Ir para Produtos
+            Ir para Alunos
           </Button>
         </Card>
       </View>
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   illustration: {
     width: 100,
     height: 100,
+    alignSelf: "center",
   },
   title: {
     fontSize: 28,
