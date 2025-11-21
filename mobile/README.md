@@ -1,50 +1,196 @@
-# Welcome to your Expo app 👋
+# 📱 Trabalho Final – React Native CRUD de Alunos (Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este projeto é uma aplicação **React Native** criada com **Expo**, que realiza operações de **CRUD** (Create, Read, Update, Delete) de alunos consumindo uma **API REST pública**.  
+O objetivo é demonstrar o uso de **rotas, navegação e integração com API** em um app mobile moderno.
 
-## Get started
+> 🔗 **API utilizada:** [http://leoproti.com.br/alunos](http://leoproti.com.br/alunos)
 
-1. Install dependencies
+---
 
+## 🚀 Funcionalidades
+
+✅ Listagem de alunos  
+✅ Cadastro de novos alunos  
+✅ Edição de alunos existentes  
+✅ Exclusão de alunos  
+✅ Interface responsiva e amigável  
+✅ Navegação entre telas com **React Navigation**
+
+---
+
+## 📦 Estrutura Esperada do alunos (API)
+
+```json
+{
+  "id": 0,
+  "nome": "string",
+  "preco": 0
+}
+```
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+| Tecnologia | Finalidade |
+|-------------|-------------|
+| [React Native](https://reactnative.dev/) | Desenvolvimento mobile multiplataforma |
+| [Expo](https://expo.dev/) | Execução e empacotamento do app |
+| [React Navigation](https://reactnavigation.org/) | Gerenciamento de rotas e telas |
+| [Axios](https://axios-http.com/) | Consumo da API REST |
+
+---
+
+## ⚙️ Instalação do Projeto
+
+1. **Instale o Expo CLI** (caso ainda não tenha):
    ```bash
-   npm install
+   npm install -g expo-cli
    ```
 
-2. Start the app
+2. **Crie ou acesse seu projeto Expo:**
+   ```bash
+   npx create-expo-app@latest app
+   cd app
+   ```
 
+3. **Instale as dependências principais:**
+   ```bash
+   npm install @react-navigation/native @react-navigation/native-stack
+   npm install axios
+   npx expo install react-native-screens react-native-safe-area-context
+   ```
+
+---
+
+## ▶️ Como Rodar o Projeto
+
+```bash
+expo start
+```
+
+Abra o app **Expo Go** no celular e escaneie o QR Code exibido no terminal.
+
+> 💡 Dica: também é possível testar no **Android Studio** ou **emulador iOS**.
+
+---
+
+## 🧩 Estrutura de Pastas Recomendada
+
+```
+src/
+├── screens/      # Telas principais (Listar, Criar, Editar)
+├── components/   # Componentes reutilizáveis (Formulário, Lista, Botões)
+├── services/     # Configuração do Axios e chamadas HTTP
+└── router/       # Definição das rotas e navegação
+```
+
+---
+
+## 🌍 Rotas da Aplicação
+
+| Rota | Descrição |
+|------|------------|
+| `/Alunos` | Exibe todos os alunos |
+| `/NovoAlunos` | Permite cadastrar novo alunos |
+| `/EditarAlunos/:id` | Edita um alunos existente |
+
+---
+
+## 🔌 Exemplos de Requisições à API
+
+```js
+// GET - Listar todos os alunos
+axios.get("http://leoproti.com.br/alunos");
+
+// POST - Criar um novo alunos
+axios.post("http://leoproti.com.br/alunos", {
+  nome: "Alunos Novo",
+  preco: 10
+});
+
+// PUT - Atualizar um alunos
+axios.put("http://leoproti.com.br/alunos/1", {
+  nome: "Alunos Atualizado",
+  preco: 20
+});
+
+// DELETE - Remover um alunos
+axios.delete("http://leoproti.com.br/alunos/1");
+```
+
+---
+
+## 🧭 Expo Router – Navegação Simplificada com Expo
+
+O **Expo Router** oferece uma forma moderna de criar rotas em projetos **Expo**, inspirada no modelo do **Next.js**.  
+Com ele, **a estrutura de pastas define automaticamente as rotas**.
+
+### 📂 Estrutura de Exemplo
+
+```
+app/
+  index.tsx           # Tela inicial
+  alunos.tsx        # Lista de alunos
+  alunos/
+    [id].tsx          # Tela de detalhes ou edição
+```
+
+### 🧠 Como Navegar entre Telas
+
+```tsx
+import { useRouter } from "expo-router";
+
+const router = useRouter();
+
+router.push("/alunos");    // Vai para a tela de alunos
+router.push("/alunos/1");  // Vai para o alunos com id 1
+router.back();               // Volta para a tela anterior
+```
+
+### ⚙️ Configuração Rápida do Expo Router
+
+1. Instale:
+   ```bash
+   npm install expo-router
+   ```
+
+2. No `app.json` ou `app.config.js`:
+   ```json
+   {
+     "expo": {
+       "entryPoint": "./node_modules/expo-router/entry"
+     }
+   }
+   ```
+
+3. Estruture suas telas dentro da pasta `app/` e rode:
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧾 Observações Importantes
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- O projeto utiliza **React Navigation** ou **Expo Router** para a navegação.  
+- Todas as operações de CRUD são realizadas **diretamente na API pública**.  
+- Para testes em dispositivos físicos, use o **app Expo Go**.  
+- As telas foram construídas com foco em **usabilidade e responsividade**.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 📚 Referências
 
-```bash
-npm run reset-project
-```
+- [Documentação do React Native](https://reactnative.dev/)
+- [Documentação do Expo](https://docs.expo.dev/)
+- [Documentação do Axios](https://axios-http.com/docs/intro)
+- [React Navigation](https://reactnavigation.org/)
+- [Documentação do Expo Router](https://expo.github.io/router/docs)
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## ✨ Autor(a)
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Natalia Ferreira**  
+💻 Projeto desenvolvido como atividade prática da disciplina **Desenvolvimento Profissional: Estudo de Caso com Rotas e Consumo de API**.

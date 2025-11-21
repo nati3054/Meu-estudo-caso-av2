@@ -1,18 +1,18 @@
-# 💻 Trabalho Final – Frontend React CRUD de Produtos
+# 💻 Trabalho Final – Frontend React CRUD de Alunos
 
-Este projeto é uma aplicação **frontend** desenvolvida com **React** (via **Vite**) que realiza operações de **CRUD** (Create, Read, Update, Delete) para produtos, consumindo uma **API REST pública**.  
+Este projeto é uma aplicação **frontend** desenvolvida com **React** (via **Vite**) que realiza operações de **CRUD** (Create, Read, Update, Delete) para alunos, consumindo uma **API REST pública**.  
 O objetivo é demonstrar o uso de **rotas, integração com API e interface moderna** utilizando o **Material UI**.
 
-> 🔗 **API utilizada:** [http://leoproti.com.br/produtos](http://leoproti.com.br/produtos)
+> 🔗 **API utilizada:** [http://leoproti.com.br/alunos](http://leoproti.com.br/alunos)
 
 ---
 
 ## 🚀 Funcionalidades
 
-✅ Listagem de produtos  
-✅ Cadastro de novos produtos  
-✅ Edição de produtos existentes  
-✅ Exclusão de produtos  
+✅ Listagem de alunos  
+✅ Cadastro de novos alunos  
+✅ Edição de alunos existentes  
+✅ Exclusão de alunos  
 ✅ Interface moderna com **Material UI**  
 ✅ Navegação entre páginas com **React Router DOM**
 
@@ -88,7 +88,7 @@ src/
 
 | Rota | Descrição |
 |------|------------|
-| `/` | Exibe todos os produtos |
+| `/` | Exibe todos os alunos |
 | `/novo` | Cadastra novo produto |
 | `/editar/:id` | Edita um produto existente |
 
@@ -97,23 +97,23 @@ src/
 ## 🔌 Exemplos de Requisições à API
 
 ```js
-// GET - Listar todos os produtos
-axios.get("http://leoproti.com.br/produtos");
+// GET - Listar todos os alunos
+axios.get("http://leoproti.com.br/alunos");
 
 // POST - Criar novo produto
-axios.post("http://leoproti.com.br/produtos", {
+axios.post("http://leoproti.com.br/alunos", {
   nome: "Produto Novo",
   preco: 10
 });
 
 // PUT - Atualizar produto existente
-axios.put("http://leoproti.com.br/produtos/1", {
+axios.put("http://leoproti.com.br/alunos/1", {
   nome: "Produto Atualizado",
   preco: 20
 });
 
 // DELETE - Remover produto
-axios.delete("http://leoproti.com.br/produtos/1");
+axios.delete("http://leoproti.com.br/alunos/1");
 ```
 
 ---
@@ -159,6 +159,94 @@ npm run dev
 - [Documentação do Material UI](https://mui.com/)
 - [Documentação do React Router](https://reactrouter.com/en/main)
 - [Documentação do Axios](https://axios-http.com/docs/intro)
+
+---
+
+## 🧪 Testes (Vitest)
+
+O projeto utiliza **Vitest** para executar testes unitários e de componentes. Abaixo há instruções de instalação, configuração e execução.
+
+### 📥 Instalação
+
+Execute (no diretório `web`):
+
+```bash
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+```
+
+### ⚙️ Configuração mínima
+
+Crie um arquivo `vitest.config.js` na raiz do `web`:
+
+```js
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts',
+    globals: true,
+  },
+})
+```
+
+No arquivo `src/setupTests.ts`, importe a biblioteca de assertions:
+
+```ts
+import '@testing-library/jest-dom'
+```
+
+### 🧾 Scripts úteis (adicione em `package.json` do `web`)
+
+```json
+{
+  "scripts": {
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
+  }
+}
+```
+
+### 🧪 Exemplo de teste
+
+Arquivo exemplo: `src/__tests__/Home.test.jsx`
+
+```jsx
+import React from 'react'
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import Home from '../pages/Home'
+
+describe('Home', () => {
+  it('renderiza o título da página', () => {
+    render(<Home />)
+    expect(screen.getByText(/alunos/i)).toBeTruthy()
+  })
+})
+```
+
+### ▶️ Como executar
+
+- Rodar todos os testes uma vez:
+
+```bash
+npm run test
+```
+
+- Rodar em modo observação (watch):
+
+```bash
+npm run test:watch
+```
+
+- Gerar relatório de cobertura:
+
+```bash
+npm run test:coverage
+```
 
 ---
 
