@@ -1,20 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Paper, Typography } from "@mui/material";
-import produtoService from "../services/produtoService";
-import FormProduto from "../components/FormProduto";
+import alunoService from "../services/alunoService";
+import FormAluno from "../components/FormAluno";
 
-export default function FormProdutoPage() {
+export default function FormAlunoPage() {
   const { id } = useParams();
-  const [produto, setProduto] = useState({ nome: "", preco: "" });
+  const [aluno, setAluno] = useState({
+    nome: "",
+    turma: "",
+    curso: "",
+    matricula: "",
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
       setLoading(true);
-      produtoService.obter(id).then((data) => {
-        setProduto({ nome: data.nome, preco: data.preco });
+      alunoService.obter(id).then((data) => {
+        setAluno({
+          nome: data.nome,
+          turma: data.turma,
+          curso: data.curso,
+          matricula: data.matricula,
+        });
         setLoading(false);
       });
     }
@@ -22,9 +32,9 @@ export default function FormProdutoPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduto((prev) => ({
+    setAluno((prev) => ({
       ...prev,
-      [name]: name === "preco" ? value.replace(",", ".") : value,
+      [name]: value,
     }));
   };
 
@@ -32,14 +42,18 @@ export default function FormProdutoPage() {
     e.preventDefault();
     setLoading(true);
     if (id) {
-      await produtoService.atualizar(id, {
-        nome: produto.nome,
-        preco: parseFloat(produto.preco),
+      await alunoService.atualizar(id, {
+        nome: aluno.nome,
+        turma: aluno.turma,
+        curso: aluno.curso,
+        matricula: aluno.matricula,
       });
     } else {
-      await produtoService.criar({
-        nome: produto.nome,
-        preco: parseFloat(produto.preco),
+      await alunoService.criar({
+        nome: aluno.nome,
+        turma: aluno.turma,
+        curso: aluno.curso,
+        matricula: aluno.matricula,
       });
     }
     setLoading(false);
@@ -63,10 +77,10 @@ export default function FormProdutoPage() {
         color="primary"
         fontWeight="bold"
       >
-        {id ? "Editar Produto" : "Novo Produto"}
+        {id ? "Editar Aluno" : "Novo Aluno"}
       </Typography>
-      <FormProduto
-        produto={produto}
+      <FormAluno
+        aluno={aluno}
         loading={loading}
         onChange={handleChange}
         onSubmit={handleSubmit}

@@ -17,7 +17,7 @@ export default function NavBar() {
             startIcon={<ListAltIcon />}
             sx={{ fontWeight: location.pathname === "/" ? "bold" : "normal" }}
           >
-            Produtos
+            Alunos
           </Button>
           <Button
             color={location.pathname === "/novo" ? "secondary" : "inherit"}
@@ -29,7 +29,7 @@ export default function NavBar() {
               fontWeight: location.pathname === "/novo" ? "bold" : "normal",
             }}
           >
-            Novo Produto
+            Novo Aluno
           </Button>
         </Stack>
       </Toolbar>

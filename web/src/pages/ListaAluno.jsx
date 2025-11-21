@@ -21,24 +21,24 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
-import produtoService from "../services/produtoService";
+import alunoService from "../services/alunoService";
 
-export default function ListaProdutos() {
-  const [produtos, setProdutos] = useState([]);
+export default function ListaAlunos() {
+  const [alunos, setAlunos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const carregarProdutos = async (showFullLoader = true) => {
+  const carregarAlunos = async (showFullLoader = true) => {
     if (showFullLoader) {
       setLoading(true);
     } else {
       setRefreshing(true);
     }
     try {
-      const lista = await produtoService.listar();
-      setProdutos(lista);
+      const lista = await alunoService.listar();
+      setAlunos(lista);
     } finally {
       if (showFullLoader) {
         setLoading(false);
@@ -49,21 +49,23 @@ export default function ListaProdutos() {
   };
 
   useEffect(() => {
-    carregarProdutos();
+    carregarAlunos();
   }, []);
 
-  const filteredProdutos = useMemo(() => {
+  const filteredAlunos = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return produtos;
-    return produtos.filter((produto) =>
-      `${produto.nome} ${produto.preco}`.toLowerCase().includes(term)
+    if (!term) return alunos;
+    return alunos.filter((aluno) =>
+      `${aluno.nome} ${aluno.turma} ${aluno.curso} ${aluno.matricula}`
+        .toLowerCase()
+        .includes(term)
     );
-  }, [produtos, search]);
+  }, [alunos, search]);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Deseja realmente excluir este produto?")) {
-      await produtoService.excluir(id);
-      carregarProdutos();
+    if (window.confirm("Deseja realmente excluir este aluno?")) {
+      await alunoService.excluir(id);
+      carregarAlunos();
     }
   };
 
@@ -98,10 +100,10 @@ export default function ListaProdutos() {
             color="text.primary"
             gutterBottom
           >
-            Produtos
+            Alunos
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Controle o estoque, acompanhe precos e mantenha tudo atualizado.
+            Cadastre os alunos, turmas e cursos para manter tudo organizado.
           </Typography>
         </Box>
         <Stack
@@ -110,7 +112,7 @@ export default function ListaProdutos() {
           alignItems={{ xs: "stretch", md: "center" }}
         >
           <TextField
-            placeholder="Buscar por nome ou preco"
+            placeholder="Buscar por nome, turma, curso ou matrícula"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             size="small"
@@ -146,12 +148,12 @@ export default function ListaProdutos() {
               textAlign: "center",
             }}
           >
-            {produtos.length} itens
+            {alunos.length} itens
           </Box>
           <Button
             variant="contained"
             startIcon={<RefreshIcon />}
-            onClick={() => carregarProdutos(false)}
+            onClick={() => carregarAlunos(false)}
             disabled={refreshing}
             sx={{
               alignSelf: { xs: "stretch", md: "center" },
@@ -182,50 +184,56 @@ export default function ListaProdutos() {
               >
                 <TableCell sx={{ whiteSpace: "nowrap" }}>ID</TableCell>
                 <TableCell sx={{ whiteSpace: "nowrap" }}>Nome</TableCell>
-                <TableCell sx={{ whiteSpace: "nowrap" }}>Preco</TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap" }}>Turma</TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap" }}>Curso</TableCell>
+                <TableCell sx={{ whiteSpace: "nowrap" }}>Matrícula</TableCell>
                 <TableCell sx={{ whiteSpace: "nowrap" }} align="right">
                   Acoes
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredProdutos.map((produto) => (
+              {filteredAlunos.map((aluno) => (
                 <TableRow
-                  key={produto.id}
+                  key={aluno.id}
                   hover
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}
                 >
                   <TableCell sx={{ whiteSpace: "nowrap" }}>
-                    {produto.id}
+                    {aluno.id}
                   </TableCell>
-                  <TableCell>{produto.nome}</TableCell>
+                  <TableCell>{aluno.nome}</TableCell>
                   <TableCell sx={{ whiteSpace: "nowrap" }}>
-                    R$ {produto.preco.toFixed(2)}
+                    {aluno.turma}
+                  </TableCell>
+                  <TableCell>{aluno.curso}</TableCell>
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>
+                    {aluno.matricula}
                   </TableCell>
                   <TableCell sx={{ whiteSpace: "nowrap" }} align="right">
                     <IconButton
                       color="primary"
-                      onClick={() => navigate(`/editar/${produto.id}`)}
+                      onClick={() => navigate(`/editar/${aluno.id}`)}
                     >
                       <EditIcon />
                     </IconButton>
                     <IconButton
                       color="secondary"
-                      onClick={() => handleDelete(produto.id)}
+                      onClick={() => handleDelete(aluno.id)}
                     >
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredProdutos.length === 0 && (
+              {filteredAlunos.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    {produtos.length === 0
-                      ? "Nenhum produto cadastrado."
-                      : "Nenhum produto encontrado para sua busca."}
+                  <TableCell colSpan={6} align="center">
+                    {alunos.length === 0
+                      ? "Nenhum aluno cadastrado."
+                      : "Nenhum aluno encontrado para sua busca."}
                   </TableCell>
                 </TableRow>
               )}
