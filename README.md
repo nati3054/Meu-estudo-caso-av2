@@ -308,4 +308,4 @@ Para informações detalhadas sobre cada projeto:
 
 ---
 
-**Última atualização:** 21 de novembro de 2025
+**Última atualização:** 19 de novembro de 2025
